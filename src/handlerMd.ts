@@ -1,31 +1,10 @@
 import * as vscode from 'vscode';
+import * as config from './config';
 
 export function updateToc()
 {
     vscode.window.showInformationMessage('--- updateToc ---');
 }
-
-/*
-		let content : string = "";
-		for (let i=0; i < document.lineCount; ++i) {
-			let line = document.lineAt(i);
-			if (line.isEmptyOrWhitespace) {
-
-			}
-			console.log(`number: ${line.lineNumber} text: ${line.text}`);
-		}
-
-		let activateTEdt = vscode.window.activeTextEditor;
-		if (typeof(activateTEdt) === "undefined") {
-			return ;
-		}
-		let lineCount = activateTEdt.document.lineCount;
-		activateTEdt.edit(editBuilder => {
-			const end = new vscode.Position(lineCount+1, 0);
-			editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end), content);
-		});
-
-*/
 
 enum EStatus { 
     E_inTocBlock
@@ -121,43 +100,60 @@ export class handler {
         }
         return true;
     }
-    // 获取当前 title level 字符串 eg: 1.2.3
-    getCrtTitleLevelStr(crtLevel:number):string {
+    // 获取当前 title level 字符串 eg: "1.2.3"
+    private getCrtTitleLevelStr(crtLevel:number):string {
+        let noStartStr:string = config.getTitleNoStartLevelStr();
         let levelStr:string = "";
         if (crtLevel < 1 || crtLevel > this.levelMax) {
             return "";
         }
         let lstStr: string[] = [];
-        for (let i=0; i<crtLevel; ++i) {
+        for (let i=noStartStr.length-1; i<crtLevel; ++i) {
             lstStr.push(String(this.lstLevelNum[i]));
         }
         levelStr = lstStr.join(".");
         return levelStr;
     }
-    // #3331-现有的表达式
-    getLinkStr(crtLevel:number, clearTitle:string):string {
+    // 生成用于锚点元素的字符串. eg: "21-插件_开发"
+    private getLinkStr(crtLevel:number, clearTitle:string):string {
         let levelStr = this.getCrtTitleLevelStr(crtLevel);
         levelStr = levelStr.replace(".", "");
         let noEmptyCharTitle = clearTitle.replace(" ", "");
         let linkStr:string = `#${levelStr}-${noEmptyCharTitle}`;
         return linkStr;
     }
-    // # 1. 网站
-    getTitleStr(level:number, clearTitle:string):string {
-        let titleStr:string = `${multString("#", level)} ${this.getCrtTitleLevelStr(level)}. ${clearTitle}`;
+    // 生成 title 字符串. eg: "# 2.1. 插件 开发"
+    private getTitleStr(level:number, clearTitle:string):string {
+        let titleStr:string = "";
+        if (config.getTitleAutoNo()) {
+            let strLevelNum = this.getCrtTitleLevelStr(level);
+            if (strLevelNum.length > 0) {
+                strLevelNum = `${strLevelNum}. `;
+            }
+            titleStr = `${multString("#", level)} ${strLevelNum}${clearTitle}`;
+        } else {
+            titleStr = `${multString("#", level)} ${clearTitle}`;
+        }
         return titleStr;
     }
-    // <a id="toc_anchor" name="2-简介"></a>
-    getTitleUrlLink(level:number, clearTitle:string):string {
+    // 生成 title 对应的锚点元素 <a id="toc_anchor" name="21-插件_开发"></a>
+    private getTitleUrlLink(level:number, clearTitle:string):string {
         let titleUrlLink:string = `<a id="toc_anchor" name="${this.getLinkStr(level, clearTitle)}"></a>`;
         return titleUrlLink;
     }
-    // - [特殊字符（元字符)](#33-特殊字符（元字符))
-    getTocStr(level:number, clearTitle:string):string {
-        let tocStr:string = `${multString("    ", level-1)}- [${clearTitle}](${this.getLinkStr(level, clearTitle)})`;
+    // 生成TOC字符串 eg: "  - [插件开发](#21-插件_开发)"
+    private getTocStr(level:number, clearTitle:string):string {
+        let tocStr:string = "";
+        if (config.getTocAutoInsertLink()) {
+            tocStr = `${multString("    ", level-1)}- [${clearTitle}](${this.getLinkStr(level, clearTitle)})`;
+        } else {
+            tocStr = `${multString("    ", level-1)}- ${clearTitle}`;
+        }
+
         return tocStr;
     }
-    checkIsTitle(text:string):{ [key: string]: any; } {
+    // 判断是否为标题
+    private checkIsTitle(text:string):{ [key: string]: any; } {
         let rtnVal :{ [key: string]: any; } = {
             "isTitle": false,
             "titleUrlLink": "",
@@ -174,20 +170,36 @@ export class handler {
         let nLevel:number = levelStr.length;
         this.setCrtTitlelevelNum(nLevel);
         rtnVal["isTitle"] = true;
-        rtnVal["titleUrlLink"] = this.getTitleUrlLink(nLevel, clearTitle);
+        if (config.getTocAutoInsertLink()) {
+            rtnVal["titleUrlLink"] = this.getTitleUrlLink(nLevel, clearTitle);
+        } 
         rtnVal["titleString"] = this.getTitleStr(nLevel, clearTitle);
         rtnVal["tocString"] = this.getTocStr(nLevel, clearTitle);
         return rtnVal;
     }
 
     // 替换字符
-    processOneLineStr(text:string):string {
-        // TODO
+    private processOneLineStr(text:string):string {
+        if (config.getUseEnglishPunctuation() === false) {
+            return text;
+        }
+        // TODO 暂时先写死
+        let mapReplace:any = {
+            "。":". ", "，":", ", "：":": ", "；":"; ", "“":"\"", "”":"\""
+            , "‘":"\'", "’":"\'", "《":"<<", "》":">>", "？":"?", "、":", "
+            , "（":"(", "）":")"
+        };
+        Object.keys(mapReplace).forEach(function(key){
+            text = text.replace(key, mapReplace[key]);
+        });
         return text;
     }
-    
+
+    startProcess():Boolean {
+        return this._process();
+    }
     // 开始处理
-    startProcess(): Boolean {
+    private _process(): Boolean {
         let nConsequentEmptyLineMaxCount = 4;   // 连续空白行的最大值
         let nConsequentEmptyLineCount = 0;  // 连续空白行的个数
         let bBeforeLineIsTitleUrlLink = false;
@@ -280,7 +292,8 @@ export class handler {
                     if (checkIsTableLine(trimedText)) {
                         this.crtLineStatus = EStatus.E_table;
                         if (beforeLineStatus !== EStatus.E_table) {
-                            if (nBeforeConsequentEmptyLineCount === 0) {
+                            if (nBeforeConsequentEmptyLineCount === 0 
+                                && config.getAutoInsertEmptyLine()) {
                                 this.lstContent.push("");
                             }
                         }
@@ -323,7 +336,8 @@ export class handler {
                         this.crtLineStatus = EStatus.E_inCodeBlock;
                         this.nextLineStatus = EStatus.E_inCodeBlock;
                         this.mapBlockExist.set("codeBlock", EBolckExistStatus.E_exist);
-                        if (nBeforeConsequentEmptyLineCount === 0) {
+                        if (nBeforeConsequentEmptyLineCount === 0
+                            && config.getAutoInsertEmptyLine()) {
                             this.lstContent.push("");
                         }
                         this.lstContent.push(sourceText);
@@ -338,8 +352,10 @@ export class handler {
                         let titleStr:string = checkTitleRtn["titleString"];
                         let tocStr:string = checkTitleRtn["tocString"];
                         
-                        this.lstContent.push(titleUrlLink);
-                        this.lstContent.push("");
+                        if (config.getTocAutoInsertLink()) {
+                            this.lstContent.push(titleUrlLink);
+                            this.lstContent.push("");
+                        }
                         this.lstContent.push(titleStr);
 
                         this.lstToc.push(tocStr);
@@ -386,8 +402,13 @@ export class handler {
 
     // 合并所有块元素到 content
     joinBlockToContent():Boolean {
-        this.lstToc = ['<!-- TOC -->', ""].concat(this.lstToc, ["", '<!-- /TOC -->']);
-        let lstTmp:string[] = this.lstToc.concat([""], this.lstConfig, [""], this.lstRes, [""], this.lstUrl);
+        let lstTmp:string[] = [];
+        if (config.getUpdateToc()) {
+            this.lstToc = ['<!-- TOC -->', ""].concat(this.lstToc, ["", '<!-- /TOC -->']);
+            lstTmp = this.lstToc.concat([""], this.lstConfig, [""], this.lstRes, [""], this.lstUrl);
+        } else {
+            lstTmp = lstTmp.concat([""], this.lstConfig, [""], this.lstRes, [""], this.lstUrl);
+        }
         this.lstContent = lstTmp.concat(this.lstContent);
         return true;
     }

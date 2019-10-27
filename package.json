@@ -1,74 +1,77 @@
 {
     "name": "markdownhandler",
-    "publisher": "zhaoyong",
+    "publisher": "zhaoyongCNSX",
     "displayName": "markdownHandler",
-    "description": "handler markdown",
-    "version": "0.0.1",
+    "description": "Generate markdown TOC, title number.",
+    "version": "1.0.0",
     "engines": {
         "vscode": "^1.39.0"
     },
-    "keywords": ["markdown", "toc"],
+    "keywords": ["markdown", "toc", "title"],
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "*",
         "workspaceContains:*.md",
-        "onCommand:extension.handlerMd",
-        "onCommand:extension.updateToc"
+        "onCommand:extension.handlerMarkdown"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [{
-                "command": "extension.handlerMd",
-                "title": "Handler current markdown file"
-            },
-            {
-                "command": "extension.updateToc",
-                "title": "Update Toc"
+                "command": "extension.handlerMarkdown",
+                "title": "处理当前markdown文件"
             }
         ],
+        "menus": {
+            "editor/context": [
+                {
+                    "when": "resourceLangId == markdown",
+                    "command": "extension.handlerMarkdown",
+                    "alt": "extension.handlerMarkdown",
+                    "group": "navigation"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
-            "title": "MdHandler",
+            "title": "MarkdownHandler",
             "properties": {
-                "MdHandler.autoHandlerWhenSave": {
+                "MarkdownHandler.autoHandlerWhenSave": {
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "在markdown文件保存时自动进行处理.(处理内容在之后设置)"
                 },
-                "MdHandler.toc.generateToc": {
+                "MarkdownHandler.toc.generateToc": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "markdownDescription": "生成TOC"
                 },
-                "MdHandler.toc.autoInsertLink": {
+                "MarkdownHandler.toc.autoInsertLink": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "markdownDescription": "自动在TOC中插入链接"
                 },
-                "MdHandler.title.autoNumbering": {
+                "MarkdownHandler.title.autoNumbering": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "markdownDescription": "标题自动编号"
                 },
-                "MdHandler.title.numveringStartNum": {
+                "MarkdownHandler.title.numveringStartNum": {
                     "type": "string",
                     "default": "#",
-                    "enum": ["#", "##", "###"],
+                    "enum": ["#", "##"],
                     "markdownDescription": "自动编号开始的标题级别",
                     "enumDescriptions": [
                         "eg: # titleA --> # 1. titleA",
-                        "eg: ## titleB --> ## 1. titleB  而 # 一级标题将不会编号",
-                        "eg: ### titleC --> ### 1. titleC 而 # 和 ## 将不会编号"
+                        "eg: ## titleB --> ## 1. titleB  而 # 一级标题将不会编号"
                     ]
                 },
-                "MdHandler.autoInsertEmptyLine": {
+                "MarkdownHandler.autoInsertEmptyLine": {
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "确保 标题后, 表格前, 代码前 有一个空行"
                 },
-                "MdHandler.useEnglishPunctuation": {
+                "MarkdownHandler.useEnglishPunctuation": {
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "替换中文标点为英文标点+空格. eg:'，'替换为', ' "
@@ -95,11 +98,11 @@
         "vscode-test": "^1.2.0"
     },
     "bugs": {
-        "url": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin/issues"
+        "url": "https://github.com/zhaoyongCNSX/mdHandler-vscode-plugin/issues"
     },
     "repository": {
         "type": "git",
-        "url": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin"
+        "url": "https://github.com/zhaoyongCNSX/mdHandler-vscode-plugin"
     },
-    "homepage": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin/blob/master/README.md"
+    "homepage": "https://github.com/zhaoyongCNSX/mdHandler-vscode-plugin/blob/master/README.md"
 }
