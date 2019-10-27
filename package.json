@@ -1,0 +1,105 @@
+{
+    "name": "markdownhandler",
+    "publisher": "zhaoyong",
+    "displayName": "markdownHandler",
+    "description": "handler markdown",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.39.0"
+    },
+    "keywords": ["markdown", "toc"],
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*",
+        "workspaceContains:*.md",
+        "onCommand:extension.handlerMd",
+        "onCommand:extension.updateToc"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [{
+                "command": "extension.handlerMd",
+                "title": "Handler current markdown file"
+            },
+            {
+                "command": "extension.updateToc",
+                "title": "Update Toc"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "MdHandler",
+            "properties": {
+                "MdHandler.autoHandlerWhenSave": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "在markdown文件保存时自动进行处理.(处理内容在之后设置)"
+                },
+                "MdHandler.toc.generateToc": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "生成TOC"
+                },
+                "MdHandler.toc.autoInsertLink": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "自动在TOC中插入链接"
+                },
+                "MdHandler.title.autoNumbering": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "标题自动编号"
+                },
+                "MdHandler.title.numveringStartNum": {
+                    "type": "string",
+                    "default": "#",
+                    "enum": ["#", "##", "###"],
+                    "markdownDescription": "自动编号开始的标题级别",
+                    "enumDescriptions": [
+                        "eg: # titleA --> # 1. titleA",
+                        "eg: ## titleB --> ## 1. titleB  而 # 一级标题将不会编号",
+                        "eg: ### titleC --> ### 1. titleC 而 # 和 ## 将不会编号"
+                    ]
+                },
+                "MdHandler.autoInsertEmptyLine": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "确保 标题后, 表格前, 代码前 有一个空行"
+                },
+                "MdHandler.useEnglishPunctuation": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "替换中文标点为英文标点+空格. eg:'，'替换为', ' "
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
+        "@types/node": "^10.12.21",
+        "@types/vscode": "^1.39.0",
+        "glob": "^7.1.4",
+        "mocha": "^6.1.4",
+        "typescript": "^3.3.1",
+        "tslint": "^5.12.1",
+        "vscode-test": "^1.2.0"
+    },
+    "bugs": {
+        "url": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin"
+    },
+    "homepage": "https://gitee.com/zhaoyongCNSX/md-vscode-plugin/blob/master/README.md"
+}
