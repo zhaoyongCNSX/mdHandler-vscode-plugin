@@ -12,7 +12,7 @@
         "Other"
     ],
     "activationEvents": [
-        "workspaceContains:*.md",
+        "onLanguage:markdown",
         "onCommand:extension.handlerMarkdown"
     ],
     "main": "./out/extension.js",

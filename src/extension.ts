@@ -18,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 
 	let cmdHandleMarkdown = vscode.commands.registerCommand('extension.handlerMarkdown', () => {
-		vscode.window.setStatusBarMessage('正在处理当前markdown文件.');
+		vscode.window.setStatusBarMessage('正在处理当前markdown文件.', 2000);
 		processMdFile();
 	});
 	context.subscriptions.push(cmdHandleMarkdown);
@@ -57,7 +57,7 @@ function processMdFile() {
 	activateTEdt.edit(editBuilder => {
 		const end = new vscode.Position(lineCount+1, 0);
 		editBuilder.replace(new vscode.Range(new vscode.Position(0, 0), end), content);
-		vscode.window.setStatusBarMessage('当前markdown文件处理完成!');
+		vscode.window.setStatusBarMessage('当前markdown文件处理完成!', 2000);
 	});
 }
 
