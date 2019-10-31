@@ -3,6 +3,7 @@
 import * as vscode from 'vscode';
 import * as mdHandler from './handlerMd';
 import * as config from './config';
+import * as pasteImg from './pasteImage';
 
 
 // this method is called when your extension is activated
@@ -23,12 +24,21 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(cmdHandleMarkdown);
 
+	let cmdPasteClipboardImage = vscode.commands.registerCommand('extension.pasteClipboardImage', () => {
+		vscode.window.setStatusBarMessage('粘贴.', 2000);
+		pasteImg.pasteClipboardImg();
+	});
+
 	vscode.workspace.onWillSaveTextDocument((event: vscode.TextDocumentWillSaveEvent) => {
 		if (config.getSaveFileAutoHandler()) {
 			processMdFile();
 		}
 	});
 }
+
+
+
+
 
 function processMdFile() {
 	let activateTEdt = vscode.window.activeTextEditor;

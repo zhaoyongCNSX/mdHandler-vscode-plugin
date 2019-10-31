@@ -45,3 +45,7 @@ export function getAutoInsertEmptyLine():boolean {
 export function getUseEnglishPunctuation():boolean {
     return getBooleanConfig('MarkdownHandler.useEnglishPunctuation');
 }
+
+export function getImageSavePath():string {
+    return getStringConfig('MarkdownHandler.pasteImage.imageSavePath');
+}

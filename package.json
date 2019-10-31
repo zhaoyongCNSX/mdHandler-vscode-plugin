@@ -20,6 +20,9 @@
         "commands": [{
                 "command": "extension.handlerMarkdown",
                 "title": "处理当前markdown文件"
+            }, {
+                "command": "extension.pasteClipboardImage",
+                "title": "粘贴剪切板图片"
             }
         ],
         "menus": {
@@ -27,6 +30,11 @@
                 {
                     "when": "resourceLangId == markdown",
                     "command": "extension.handlerMarkdown",
+                    "alt": "extension.handlerMarkdown",
+                    "group": "navigation"
+                },{
+                    "when": "resourceLangId == markdown",
+                    "command": "extension.pasteClipboardImage",
                     "alt": "extension.handlerMarkdown",
                     "group": "navigation"
                 }
@@ -75,6 +83,11 @@
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "替换中文标点为英文标点+空格. eg:'，'替换为', ' "
+                }, 
+                "MarkdownHandler.pasteImage.imageSavePath": {
+                    "type": "string",
+                    "default": "./res/mdImg",
+                    "markdownDescription": "图片存储路径"
                 }
             }
         }
