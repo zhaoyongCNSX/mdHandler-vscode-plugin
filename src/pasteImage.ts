@@ -38,7 +38,7 @@ function insertMdImgStr(imgUrl:string) {
 	}
 }
 
-let funcTemp = function (imagePath:string, imagePathReturnByScript:string, imgSaveAbsDir:string) {
+let funcPasteImgSuccessed = function (imagePath:string, imagePathReturnByScript:string, imgSaveAbsDir:string) {
 	if (!imagePathReturnByScript) {
 		return;
 	}
@@ -174,5 +174,5 @@ export function pasteClipboardImg() {
 	mkPath(imgDirPath);
 	let tempName = getImgFileTempName();
 	let imgSavePath = path.join(imgDirPath, `${tempName}.png`);
-    saveClipboardImg(imgSavePath, imgSaveAbsDir, funcTemp);
+    saveClipboardImg(imgSavePath, imgSaveAbsDir, funcPasteImgSuccessed);
 }
