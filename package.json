@@ -17,6 +17,18 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "languages": [
+            {
+                "id": "markdown",
+                "filenames": [
+                    "*.md"
+                ],
+                "aliases": [
+                    "markdown"
+                ],
+                "configuration": "./languages/markdown.json"
+            }
+        ],
         "commands": [{
                 "command": "extension.handlerMarkdown",
                 "title": "处理当前markdown文件"
