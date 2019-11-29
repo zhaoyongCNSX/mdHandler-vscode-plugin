@@ -48,18 +48,20 @@ let funcPasteImgSuccessed = function (imagePath:string, imagePathReturnByScript:
 	}	
 	let oldName = path.parse(imagePath).name;
     
-    // 弹框询问
-	vscode.window.showInputBox({ ignoreFocusOut:true, password:false, placeHolder:oldName, prompt:"输入图片名", }).then(function(input){
+    // 弹框询问图片名
+	vscode.window.showInputBox({ ignoreFocusOut:true, password:false, placeHolder:oldName, prompt:"输入图片名, 不需要写后缀", }).then(function(input){
 		if (typeof input === "undefined") {
 			return ;
 		}
 		input = input.trim();	// 去除前后空白字符
+
 		// 输入空字符串
 		if (input.length === 0) {
 			let mdImgUrl = `${imgSaveAbsDir}/${oldName}.png`;
 			insertMdImgStr(mdImgUrl);
 			return;
 		}
+		input = path.parse(input).name;		// 移除后缀
 		let newPath = path.join(path.parse(imagePath).dir, `${input}.png`);
 		// 重命名
 		vscode.workspace.fs.rename(vscode.Uri.file(imagePath), vscode.Uri.file(newPath), {overwrite:true}).then(function(){
