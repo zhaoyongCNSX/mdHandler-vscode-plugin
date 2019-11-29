@@ -1,0 +1,10 @@
+{
+    "scopeName": "text.html.markdown",
+    "patterns": [
+        { 
+            "name": "comment.line",
+            "match": "<a id=\"toc_anchor\"[\\w\\s]*></a>"
+        }
+    
+    ]
+}
