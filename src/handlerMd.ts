@@ -117,7 +117,7 @@ export class handler {
     // 生成用于锚点元素的字符串. eg: "21-插件_开发"
     private getLinkStr(crtLevel:number, clearTitle:string):string {
         let levelStr = this.getCrtTitleLevelStr(crtLevel);
-        levelStr = levelStr.replace(RegExp(".", "g"), "");
+        levelStr = levelStr.replace(RegExp("\\.", "g"), "");
         let noEmptyCharTitle = clearTitle.replace(RegExp(" ", "g"), "");
         let linkStr:string = `#${levelStr}-${noEmptyCharTitle}`;
         return linkStr;

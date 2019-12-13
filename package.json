@@ -2,8 +2,8 @@
     "name": "markdownhandler",
     "publisher": "zhaoyongCNSX",
     "displayName": "markdownHandler",
-    "description": "生成markdown的TOC, title自动编号等.",
-    "version": "1.4.0",
+    "description": "生成markdown的TOC, title自动编号, 快速插入图片等.",
+    "version": "1.5.0",
     "engines": {
         "vscode": "^1.39.0"
     },
